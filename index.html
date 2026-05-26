@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MPC Nexus Tech – Tecnologia que Conecta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ===================== RESET & BASE ===================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teal-dark:   #1a4f5c;
+      --teal-mid:    #1e7a8c;
+      --teal-bright: #22a8c0;
+      --green-neon:  #3ef09a;
+      --green-mid:   #28c97a;
+      --charcoal:    #1e2b30;
+      --dark-bg:     #0d1618;
+      --darker-bg:   #080e10;
+      --card-bg:     rgba(20, 38, 44, 0.85);
+      --text-main:   #e8f5f8;
+      --text-muted:  #7aabb8;
+      --border:      rgba(34,168,192,0.25);
+      --glow-teal:   0 0 20px rgba(34,168,192,0.4);
+      --glow-green:  0 0 20px rgba(62,240,154,0.4);
+      --whatsapp:    #25d366;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--darker-bg);
+      color: var(--text-main);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ===================== CUSTOM CURSOR ===================== */
+    .cursor {
+      position: fixed; width: 10px; height: 10px;
+      background: var(--green-neon); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: transform 0.1s ease;
+      box-shadow: 0 0 10px var(--green-neon), 0 0 30px rgba(62,240,154,0.3);
+    }
+    .cursor-ring {
+      position: fixed; width: 36px; height: 36px;
+      border: 1.5px solid rgba(62,240,154,0.6); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: all 0.15s ease;
+    }
+    .cursor-ring.hover { transform: translate(-50%,-50%) scale(1.8); border-color: var(--teal-bright); }
+
+    /* ===================== SCANLINE OVERLAY ===================== */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 4px
+      );
+      pointer-events: none; z-index: 1000;
+    }
+
+    /* ===================== GRID BACKGROUND ===================== */
+    .grid-bg {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden;
+    }
+    .grid-bg::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(34,168,192,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,168,192,0.06) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .grid-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(26,79,92,0.35) 0%, transparent 70%),
+                  radial-gradient(ellipse at 0% 80%, rgba(62,240,154,0.08) 0%, transparent 50%),
+                  radial-gradient(ellipse at 100% 20%, rgba(34,168,192,0.08) 0%, transparent 50%);
+    }
+
+    /* ===================== FLOATING PARTICLES ===================== */
+    .particles { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+    .particle {
+      position: absolute; border-radius: 50%;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.6; }
+      100% { transform: translateY(-10vh) translateX(var(--drift)) scale(1); opacity: 0; }
+    }
+
+    /* ===================== NAVBAR ===================== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 6%;
+      height: 72px;
+      background: rgba(8,14,16,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+    nav.scrolled { box-shadow: 0 4px 40px rgba(34,168,192,0.15); }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none;
+    }
+    .nav-logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--teal-mid), var(--green-neon));
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px; font-weight: 900; color: var(--darker-bg);
+      animation: rotateHex 8s linear infinite;
+    }
+    @keyframes rotateHex { to { transform: rotate(360deg); } }
+
+    .nav-brand {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px; font-weight: 700;
+      color: var(--text-main); letter-spacing: 2px;
+    }
+    .nav-brand span { color: var(--green-neon); }
+
+    .nav-links {
+      display: flex; gap: 36px; list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted); text-decoration: none;
+      font-size: 13px; font-weight: 500; letter-spacing: 1.5px;
+      text-transform: uppercase; position: relative;
+      transition: color 0.3s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px; background: var(--green-neon);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--green-neon); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      background: transparent;
+      border: 1px solid var(--teal-bright);
+      color: var(--teal-bright);
+      padding: 8px 20px; border-radius: 2px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+      cursor: pointer; text-decoration: none;
+      transition: all 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .nav-cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: var(--teal-bright); transform: translateX(-100%);
+      transition: transform 0.3s;
+    }
+    .nav-cta:hover { color: var(--darker-bg); }
+    .nav-cta:hover::before { transform: translateX(0); }
+    .nav-cta span { position: relative; z-index: 1; }
+
+    /* ===================== HERO ===================== */
+    #hero {
+      position: relative; z-index: 2;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 140px 6% 80px;
+    }
+
+    .hero-inner { max-width: 900px; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid rgba(62,240,154,0.3);
+      background: rgba(62,240,154,0.06);
+      color: var(--green-neon);
+      padding: 6px 18px; border-radius: 100px;
+      font-size: 11px; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 32px;
+      animation: fadeDown 0.8s ease forwards;
+    }
+    .hero-badge-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green-neon);
+      box-shadow: 0 0 8px var(--green-neon);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .hero-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5.5rem);
+      font-weight: 900; line-height: 1.05;
+      letter-spacing: -1px;
+      margin-bottom: 24px;
+      animation: fadeDown 0.8s 0.2s ease both;
+    }
+    .hero-title .line1 { display: block; color: var(--text-main); }
+    .hero-title .accent {
+      display: block;
+      background: linear-gradient(90deg, var(--teal-bright), var(--green-neon));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem; color: var(--text-muted); font-weight: 300;
+      line-height: 1.8; max-width: 600px; margin: 0 auto 48px;
+      animation: fadeDown 0.8s 0.4s ease both;
+    }
+
+    .hero-actions {
+      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+      animation: fadeDown 0.8s 0.6s ease both;
+    }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--teal-mid), var(--teal-bright));
+      color: white; padding: 15px 34px; border-radius: 2px;
+      font-family: 'Orbitron', sans-serif; font-size: 12px;
+      font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      text-decoration: none; border: none; cursor: pointer;
+      position: relative; overflow: hidden;
+      box-shadow: 0 0 30px rgba(34,168,192,0.35);
+      transition: all 0.3s;
+    }
+    .btn-primary::after {
+      content: ''; position: absolute; top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transition: left 0.5s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(34,168,192,0.5); }
+    .btn-primary:hover::after { left: 100%; }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 10px;
+      border: 1px solid var(--border);
+      color: var(--text-muted); padding: 15px 34px; border-radius: 2px;
+      font-family: 'Orbitron', sans-serif; font-size: 12px;
+      font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+      text-decoration: none; cursor: pointer; background: transparent;
+      transition: all 0.3s;
+    }
+    .btn-ghost:hover { border-color: var(--green-neon); color: var(--green-neon); background: rgba(62,240,154,0.05); }
+
+    .hero-scroll {
+      position: absolute; bottom: 40px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: var(--text-muted); font-size: 11px; letter-spacing: 2px;
+      text-transform: uppercase; animation: fadeDown 1s 1s ease both;
+    }
+    .scroll-line {
+      width: 1px; height: 60px;
+      background: linear-gradient(to bottom, var(--teal-bright), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%,100% { transform: scaleY(1); opacity: 1; }
+      50% { transform: scaleY(0.5); opacity: 0.4; }
+    }
+
+    /* Floating HEX SHAPES hero */
+    .hex-float {
+      position: absolute; z-index: 0; opacity: 0.08;
+      animation: driftFloat 12s ease-in-out infinite;
+    }
+    @keyframes driftFloat {
+      0%,100% { transform: translate(0,0) rotate(0deg); }
+      33% { transform: translate(20px,-30px) rotate(120deg); }
+      66% { transform: translate(-20px,20px) rotate(240deg); }
+    }
+
+    /* ===================== SECTION COMMONS ===================== */
+    section { position: relative; z-index: 2; }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+    .section-label {
+      display: inline-block;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px; font-weight: 700; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--teal-bright);
+      margin-bottom: 16px;
+      padding: 5px 16px;
+      border: 1px solid rgba(34,168,192,0.3);
+      border-radius: 2px;
+    }
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 700; letter-spacing: -0.5px;
+      margin-bottom: 16px;
+    }
+    .section-title .hl {
+      background: linear-gradient(90deg, var(--teal-bright), var(--green-neon));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .section-sub {
+      color: var(--text-muted); font-size: 1rem; font-weight: 300; max-width: 550px; margin: 0 auto;
+    }
+
+    /* ===================== STATS BAR ===================== */
+    #stats {
+      padding: 60px 6%;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(13,22,24,0.6);
+    }
+    .stats-grid {
+      display: flex; justify-content: center; align-items: center;
+      gap: 0; flex-wrap: wrap; max-width: 1000px; margin: 0 auto;
+    }
+    .stat-item {
+      flex: 1; min-width: 160px;
+      text-align: center; padding: 24px 32px;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.8rem; font-weight: 900;
+      background: linear-gradient(135deg, var(--teal-bright), var(--green-neon));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      line-height: 1;
+    }
+    .stat-label {
+      color: var(--text-muted); font-size: 11px; font-weight: 500;
+      letter-spacing: 2px; text-transform: uppercase; margin-top: 8px;
+    }
+
+    /* ===================== SERVICES ===================== */
+    #servicos { padding: 120px 6%; }
+
+    /* Segment divider */
+    .segment-divider {
+      display: flex; align-items: center; gap: 24px;
+      margin: 80px 0 56px;
+    }
+    .segment-divider-line { flex: 1; height: 1px; background: var(--border); }
+    .segment-tag {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 28px;
+      border: 1px solid;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      border-radius: 2px; white-space: nowrap;
+    }
+    .segment-tag.empresarial {
+      border-color: var(--teal-bright); color: var(--teal-bright);
+      background: rgba(34,168,192,0.06);
+    }
+    .segment-tag.residencial {
+      border-color: var(--green-neon); color: var(--green-neon);
+      background: rgba(62,240,154,0.06);
+    }
+    .seg-icon { font-size: 18px; }
+
+    /* Card Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    /* SERVICE CARD */
+    .service-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 36px 32px;
+      position: relative; overflow: hidden;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(10px);
+      cursor: default;
+    }
+    .service-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--card-accent, var(--teal-bright)), transparent);
+      transform: scaleX(0); transition: transform 0.4s;
+    }
+    .service-card::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(34,168,192,0.08), transparent 60%);
+      opacity: 0; transition: opacity 0.4s;
+    }
+    .service-card:hover {
+      border-color: rgba(34,168,192,0.5);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), var(--glow-teal);
+    }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-card:hover::after { opacity: 1; }
+
+    .service-card.residencial { --card-accent: var(--green-neon); }
+    .service-card.residencial:hover {
+      border-color: rgba(62,240,154,0.5);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), var(--glow-green);
+    }
+
+    .card-number {
+      position: absolute; top: 20px; right: 20px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px; font-weight: 700;
+      color: rgba(34,168,192,0.25); letter-spacing: 2px;
+    }
+    .service-card.residencial .card-number { color: rgba(62,240,154,0.25); }
+
+    .card-icon-wrap {
+      width: 64px; height: 64px;
+      border: 1px solid;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 3px; margin-bottom: 28px;
+      position: relative; z-index: 1;
+      transition: all 0.4s;
+    }
+    .empresarial .card-icon-wrap {
+      border-color: rgba(34,168,192,0.35);
+      background: rgba(34,168,192,0.06);
+    }
+    .residencial .card-icon-wrap {
+      border-color: rgba(62,240,154,0.35);
+      background: rgba(62,240,154,0.06);
+    }
+    .service-card:hover .card-icon-wrap {
+      transform: scale(1.08);
+    }
+    .card-icon { font-size: 28px; display: block; }
+
+    .card-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 15px; font-weight: 700;
+      line-height: 1.4; margin-bottom: 14px;
+      color: var(--text-main); position: relative; z-index: 1;
+    }
+    .card-desc {
+      font-size: 13.5px; color: var(--text-muted); line-height: 1.8;
+      font-weight: 300; margin-bottom: 28px; position: relative; z-index: 1;
+    }
+
+    .card-tags {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-bottom: 28px; position: relative; z-index: 1;
+    }
+    .tag {
+      padding: 4px 10px; border-radius: 2px;
+      font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+    }
+    .empresarial .tag {
+      background: rgba(34,168,192,0.1); color: var(--teal-bright);
+      border: 1px solid rgba(34,168,192,0.2);
+    }
+    .residencial .tag {
+      background: rgba(62,240,154,0.1); color: var(--green-neon);
+      border: 1px solid rgba(62,240,154,0.2);
+    }
+
+    .card-cta {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 13px 20px;
+      border: none; border-radius: 2px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; cursor: pointer;
+      text-decoration: none; position: relative; z-index: 1;
+      transition: all 0.3s; overflow: hidden;
+    }
+    .empresarial .card-cta {
+      background: rgba(34,168,192,0.12);
+      border: 1px solid var(--teal-bright); color: var(--teal-bright);
+    }
+    .empresarial .card-cta:hover {
+      background: var(--teal-bright); color: var(--darker-bg);
+      box-shadow: 0 0 20px rgba(34,168,192,0.5);
+    }
+    .residencial .card-cta {
+      background: rgba(62,240,154,0.1);
+      border: 1px solid var(--green-neon); color: var(--green-neon);
+    }
+    .residencial .card-cta:hover {
+      background: var(--green-neon); color: var(--darker-bg);
+      box-shadow: 0 0 20px rgba(62,240,154,0.5);
+    }
+
+    .wa-icon {
+      width: 18px; height: 18px;
+      background: currentColor;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z'/%3E%3C/svg%3E") center/contain no-repeat;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z'/%3E%3C/svg%3E") center/contain no-repeat;
+    }
+
+    /* ===================== WHY US ===================== */
+    #diferenciais { padding: 120px 6%; background: rgba(13,22,24,0.5); }
+
+    .diff-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 32px;
+    }
+    .diff-item {
+      padding: 40px 28px;
+      border: 1px solid var(--border);
+      border-radius: 4px; text-align: center;
+      background: rgba(20,38,44,0.4);
+      transition: all 0.4s;
+      position: relative; overflow: hidden;
+    }
+    .diff-item::before {
+      content: ''; position: absolute;
+      bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 0; height: 2px;
+      background: linear-gradient(90deg, var(--teal-bright), var(--green-neon));
+      transition: width 0.4s;
+    }
+    .diff-item:hover { transform: translateY(-4px); border-color: rgba(34,168,192,0.4); }
+    .diff-item:hover::before { width: 80%; }
+    .diff-icon { font-size: 42px; margin-bottom: 20px; }
+    .diff-title {
+      font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 700;
+      color: var(--text-main); margin-bottom: 12px; letter-spacing: 1px;
+    }
+    .diff-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.8; font-weight: 300; }
+
+    /* ===================== CTA BAND ===================== */
+    #cta-band {
+      padding: 100px 6%;
+      background: linear-gradient(135deg, rgba(26,79,92,0.3), rgba(62,240,154,0.05));
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+    .cta-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 700; margin-bottom: 20px;
+    }
+    .cta-sub { color: var(--text-muted); font-size: 1.05rem; font-weight: 300; margin-bottom: 48px; }
+    .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-whatsapp {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--whatsapp); color: white;
+      padding: 15px 36px; border-radius: 2px;
+      font-family: 'Orbitron', sans-serif; font-size: 12px;
+      font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      text-decoration: none; border: none; cursor: pointer;
+      box-shadow: 0 0 30px rgba(37,211,102,0.3);
+      transition: all 0.3s;
+    }
+    .btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(37,211,102,0.5); }
+
+    /* ===================== FOOTER ===================== */
+    footer {
+      padding: 60px 6% 40px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .footer-logo {
+      font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900;
+      letter-spacing: 3px; margin-bottom: 16px;
+    }
+    .footer-logo span { color: var(--green-neon); }
+    .footer-tagline { color: var(--text-muted); font-size: 13px; font-weight: 300; margin-bottom: 36px; }
+    .footer-links {
+      display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 36px;
+    }
+    .footer-links a {
+      color: var(--text-muted); text-decoration: none;
+      font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--teal-bright); }
+    .footer-copy { color: rgba(122,171,184,0.4); font-size: 11px; letter-spacing: 1px; }
+
+    /* ===================== FLOATING WA BUTTON ===================== */
+    .wa-fab {
+      position: fixed; bottom: 32px; right: 32px;
+      width: 58px; height: 58px; border-radius: 50%;
+      background: var(--whatsapp);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 30px rgba(37,211,102,0.5);
+      z-index: 400; text-decoration: none;
+      transition: all 0.3s; cursor: none;
+    }
+    .wa-fab:hover { transform: scale(1.1); box-shadow: 0 4px 50px rgba(37,211,102,0.7); }
+    .wa-fab svg { width: 28px; height: 28px; fill: white; }
+    .wa-fab-ripple {
+      position: fixed; bottom: 32px; right: 32px;
+      width: 58px; height: 58px; border-radius: 50%;
+      border: 2px solid var(--whatsapp); z-index: 399;
+      animation: rippleOut 2s ease-out infinite;
+      pointer-events: none;
+    }
+    @keyframes rippleOut {
+      0% { transform: scale(1); opacity: 0.6; }
+      100% { transform: scale(2.5); opacity: 0; }
+    }
+
+    /* ===================== ANIMATIONS ===================== */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ===================== MOBILE NAV ===================== */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; padding: 8px;
+    }
+    .hamburger span {
+      width: 24px; height: 2px;
+      background: var(--text-main); display: block;
+      transition: all 0.3s;
+    }
+    .hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* ===================== RESPONSIVE ===================== */
+    @media (max-width: 900px) {
+      body { cursor: auto; }
+      .cursor, .cursor-ring { display: none; }
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .mobile-menu {
+        display: none; position: fixed; top: 72px; left: 0; right: 0;
+        background: rgba(8,14,16,0.98); backdrop-filter: blur(20px);
+        padding: 32px 6%; border-bottom: 1px solid var(--border);
+        z-index: 499;
+      }
+      .mobile-menu.open { display: block; }
+      .mobile-menu a {
+        display: block; padding: 14px 0;
+        color: var(--text-muted); text-decoration: none;
+        font-family: 'Orbitron', sans-serif; font-size: 13px;
+        letter-spacing: 2px; text-transform: uppercase;
+        border-bottom: 1px solid var(--border); transition: color 0.3s;
+      }
+      .mobile-menu a:hover { color: var(--green-neon); }
+      .stat-item { min-width: 120px; padding: 20px 16px; }
+      .stat-num { font-size: 2rem; }
+    }
+
+    @media (max-width: 600px) {
+      .segment-divider { flex-direction: column; gap: 16px; }
+      .segment-divider-line { display: none; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .diff-grid { grid-template-columns: 1fr; }
+      .stats-grid { gap: 0; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
+      .stat-item:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Custom Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- Grid Background -->
+  <div class="grid-bg"></div>
+
+  <!-- Particles -->
+  <div class="particles" id="particles"></div>
+
+  <!-- Floating WhatsApp -->
+  <div class="wa-fab-ripple"></div>
+  <a href="https://wa.me/5581982797620?text=Olá! Gostaria de saber mais sobre os serviços da MPC Nexus Tech."
+     target="_blank" class="wa-fab" title="Fale conosco no WhatsApp">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+  </a>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo">
+      <div class="nav-logo-icon">MPC</div>
+      <span class="nav-brand">NEXUS <span>TECH</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#servicos">Serviços</a></li>
+      <li><a href="#diferenciais">Diferenciais</a></li>
+      <li><a href="#cta-band">Contato</a></li>
+    </ul>
+    <a href="https://wa.me/5581982797620?text=Olá! Gostaria de solicitar um orçamento." target="_blank" class="nav-cta"><span>Orçamento</span></a>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#servicos" onclick="closeMobile()">Serviços</a>
+    <a href="#diferenciais" onclick="closeMobile()">Diferenciais</a>
+    <a href="#cta-band" onclick="closeMobile()">Contato</a>
+    <a href="https://wa.me/5581982797620" target="_blank">WhatsApp</a>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero">
+    <!-- Floating hex decorations -->
+    <svg class="hex-float" style="width:300px;top:10%;left:-80px;animation-delay:0s" viewBox="0 0 200 200">
+      <polygon points="100,10 190,55 190,145 100,190 10,145 10,55" fill="none" stroke="#22a8c0" stroke-width="1.5"/>
+    </svg>
+    <svg class="hex-float" style="width:200px;bottom:15%;right:-60px;animation-delay:4s" viewBox="0 0 200 200">
+      <polygon points="100,10 190,55 190,145 100,190 10,145 10,55" fill="none" stroke="#3ef09a" stroke-width="1.5"/>
+    </svg>
+    <svg class="hex-float" style="width:120px;top:30%;right:10%;animation-delay:2s;opacity:0.06" viewBox="0 0 200 200">
+      <polygon points="100,10 190,55 190,145 100,190 10,145 10,55" fill="#22a8c0" stroke="none"/>
+    </svg>
+
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        Soluções Tecnológicas Premium
+      </div>
+      <h1 class="hero-title">
+        <span class="line1">Conectando o Futuro</span>
+        <span class="accent">Ao Seu Negócio</span>
+      </h1>
+      <p class="hero-subtitle">
+        Da infraestrutura de redes à automação residencial, a MPC Nexus Tech entrega soluções tecnológicas completas com excelência, agilidade e suporte contínuo.
+      </p>
+      <div class="hero-actions">
+        <a href="#servicos" class="btn-primary">
+          <span>Ver Serviços</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="https://wa.me/5581982797620?text=Olá! Quero saber mais sobre a MPC Nexus Tech." target="_blank" class="btn-ghost">Falar com Especialista</a>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div id="stats">
+    <div class="stats-grid reveal">
+      <div class="stat-item">
+        <div class="stat-num" data-count="8">0</div>
+        <div class="stat-label">Serviços Oferecidos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" data-count="100">0</div>
+        <div class="stat-label">% Dedicação</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">2</div>
+        <div class="stat-label">Segmentos Atendidos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">Suporte Disponível</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <section id="servicos">
+    <div class="section-header reveal">
+      <div class="section-label">// Catálogo de Serviços</div>
+      <h2 class="section-title">Nossas <span class="hl">Soluções</span></h2>
+      <p class="section-sub">Tecnologia especializada para cada necessidade, com atendimento personalizado via WhatsApp.</p>
+    </div>
+
+    <!-- EMPRESARIAL -->
+    <div class="segment-divider reveal">
+      <div class="segment-divider-line"></div>
+      <div class="segment-tag empresarial">
+        <span class="seg-icon">🏢</span>
+        Serviços Empresariais
+      </div>
+      <div class="segment-divider-line"></div>
+    </div>
+
+    <div class="cards-grid">
+
+      <div class="service-card empresarial reveal" style="transition-delay:0.05s">
+        <span class="card-number">01</span>
+        <div class="card-icon-wrap"><span class="card-icon">🖥️</span></div>
+        <h3 class="card-title">Formatação & Manutenção de Computadores</h3>
+        <p class="card-desc">Diagnóstico completo, formatação com backup seguro, instalação de SO e drivers, limpeza física e otimização de performance.</p>
+        <div class="card-tags"><span class="tag">Windows</span><span class="tag">macOS</span><span class="tag">Linux</span><span class="tag">Diagnóstico</span></div>
+        <a href="https://wa.me/5581982797620?text=Olá! Tenho interesse no serviço de Formatação e Manutenção de Computadores." target="_blank" class="card-cta">
+          <span class="wa-icon"></span> Solicitar Orçamento
+        </a>
+      </div>
+
+      <div class="service-card empresarial reveal" style="transition-delay:0.1s">
+        <span class="card-number">02</span>
+        <div class="card-icon-wrap"><span class="card-icon">⚙️</span></div>
+        <h3 class="card-title">Upgrade & Montagem de PC</h3>
+        <p class="card-desc">Montagem personalizada de estações de trabalho, upgrade de hardware (RAM, SSD, GPU), configuração de BIOS e testes de estabilidade.</p>
+        <div class="card-tags"><span class="tag">Hardware</span><span class="tag">Workstation</span><span class="tag">Gaming</span></div>
+        <a href="https://wa.me/558198297620?text=Olá! Gostaria de saber mais sobre Upgrade e Montagem de PC." target="_blank" class="card-cta">
+          <span class="wa-icon"></span> Solicitar Orçamento
+        </a>
+      </div>
+
+      <div class="service-card empresarial reveal" style="transition-delay:0.15s">
+        <span class="card-number">03</span>
+        <div class="card-icon-wrap"><span class="card-icon">📊</span></div>
+        <h3 class="card-title">Software de Gerenciamento por Assinatura</h3>
+        <p class="card-desc">Plataforma SaaS completa para gestão do seu negócio: controle financeiro, estoque, clientes, relatórios e muito mais — sempre atualizado.</p>
+        <div class="card-tags"><span class="tag">SaaS</span><span class="tag">ERP</span><span class="tag">Assinatura</span><span class="tag">Cloud</span></div>
+        <a href="https://wa.me/558198297620?text=Olá! Quero conhecer o Software de Gerenciamento por Assinatura." target="_blank" class="card-cta">
+          <span class="wa-icon"></span> Solicitar Orçamento
+        </a>
+      </div>
+
+      <div class="service-card empresarial reveal" style="transition-delay:0.2s">
+        <span class="card-number">04</span>
+        <div class="card-icon-wrap"><span class="card-icon">💻</span></div>
+        <h3 class="card-title">Desenvolvimento de Software Específico</h3>
+        <p class="card-desc">Criação de sistemas sob medida para seu negócio: automações, integrações, aplicativos web/mobile e APIs personalizadas.</p>
+        <div class="card-tags"><span class="tag">Web App</span><span class="tag">Mobile</span><span class="tag">API</span><span class="tag">Automação</span></div>
+        <a href="https://wa.me/558198297620?text=Olá! Preciso de um Software Específico para meu negócio." target="_blank" class="card-cta">
+          <span class="wa-icon"></span> Solicitar Orçamento
+        </a>
+      </div>
+
+      <div class="service-card empresarial reveal" style="transition-delay:0.25s">
+        <span class="card-number">05</span>
+        <div class="card-icon-wrap"><span class="card-icon">🌐</span></div>
+        <h3 class="card-title">Estrutura de Redes</h3>
+        <p class="card-desc">Projeto e implantação de redes cabeadas e Wi-Fi corporativas, configuração de switches, roteadores, firewalls, VLANs e segurança de rede.</p>
+        <div class="card-tags"><span class="tag">LAN/WAN</span><span class="tag">Wi-Fi</span><span class="tag">Firewall</span><span class="tag">VPN</span></div>
+        <a href="https://wa.me/5581982797620?text=Olá! Preciso de ajuda com Estrutura de Redes para minha empresa." target="_blank" class="card-cta">
+          <span class="wa-icon"></span> Solicitar Orçamento
+        </a>
+      </div>
+
+    </div>
+
+    <!-- RESIDENCIAL -->
+    <div class="segment-divider reveal">
+      <div class="segment-divider-line"></div>
+      <div class="segment-tag residencial">
+        <span class="seg-icon">🏠</span>
+        Serviços Residenciais
+      </div>
+      <div class="segment-divider-line"></div>
+    </div>
+
+    <div class="cards-grid">
+
+      <div class="service-card residencial reveal" style="transition-delay:0.05s">
+        <span class="card-number">06</span>
+        <div class="card-icon-wrap"><span class="card-icon">📷</span></div>
+        <h3 class="card-title">Instalação de Câmeras de Segurança</h3>
+        <p class="card-desc">Projeto e instalação de sistemas de CFTV e câmeras IP para monitoramento residencial com acesso remoto pelo celular.</p>
+        <div class="card-tags"><span class="tag">CFTV</span><span class="tag">IP</span><span class="tag">HD / 4K</span><span class="tag">Remoto</span></div>
+        <a href="https://wa.me/5581982797620?text=Olá! Quero instalar câmeras de segurança na minha residência." target="_blank" class="card-cta">
+          <span class="wa-icon"></span> Solicitar Orçamento
+        </a>
+      </div>
+
+      <div class="service-card residencial reveal" style="transition-delay:0.1s">
+        <span class="card-number">07</span>
+        <div class="card-icon-wrap"><span class="card-icon">🔔</span></div>
+        <h3 class="card-title">Interfones com Câmera</h3>
+        <p class="card-desc">Instalação de videoporteiros e interfones inteligentes com câmera, áudio bidirecional e controle de acesso pelo smartphone.</p>
+        <div class="card-tags"><span class="tag">Videoporteiro</span><span class="tag">Smart</span><span class="tag">Acesso</span></div>
+        <a href="https://wa.me/5581982797620?text=Olá! Tenho interesse em Interfone com Câmera para minha casa." target="_blank" class="card-cta">
+          <span class="wa-icon"></span> Solicitar Orçamento
+        </a>
+      </div>
+
+      <div class="service-card residencial reveal" style="transition-delay:0.15s">
+        <span class="card-number">08</span>
+        <div class="card-icon-wrap"><span class="card-icon">🏡</span></div>
+        <h3 class="card-title">Automação Residencial — Alexa</h3>
+        <p class="card-desc">Transforme sua casa em um lar inteligente: controle de luzes, ar-condicionado, tomadas e dispositivos com Alexa e rotinas automáticas.</p>
+        <div class="card-tags"><span class="tag">Smart Home</span><span class="tag">Alexa</span><span class="tag">IoT</span><span class="tag">Voz</span></div>
+        <a href="https://wa.me/5581982797620?text=Olá! Gostaria de saber mais sobre Automação Residencial com Alexa." target="_blank" class="card-cta">
+          <span class="wa-icon"></span> Solicitar Orçamento
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- DIFERENCIAIS -->
+  <section id="diferenciais">
+    <div class="section-header reveal">
+      <div class="section-label">// Por Que Nos Escolher</div>
+      <h2 class="section-title">Nossos <span class="hl">Diferenciais</span></h2>
+      <p class="section-sub">Comprometimento, qualidade e tecnologia de ponta em cada projeto.</p>
+    </div>
+    <div class="diff-grid">
+      <div class="diff-item reveal" style="transition-delay:0s">
+        <div class="diff-icon">🎯</div>
+        <div class="diff-title">Atendimento Personalizado</div>
+        <div class="diff-desc">Cada cliente recebe atenção individual. Entendemos seu contexto e entregamos soluções que fazem sentido para você.</div>
+      </div>
+      <div class="diff-item reveal" style="transition-delay:0.1s">
+        <div class="diff-icon">⚡</div>
+        <div class="diff-title">Agilidade & Eficiência</div>
+        <div class="diff-desc">Processos otimizados e resposta rápida. Sem burocracia, sem demora — resolvemos com velocidade e precisão.</div>
+      </div>
+      <div class="diff-item reveal" style="transition-delay:0.2s">
+        <div class="diff-icon">🔒</div>
+        <div class="diff-title">Segurança & Confiabilidade</div>
+        <div class="diff-desc">Trabalhamos com as melhores práticas de segurança digital e física, garantindo proteção total dos seus dados e sistema.</div>
+      </div>
+      <div class="diff-item reveal" style="transition-delay:0.3s">
+        <div class="diff-icon">🛠️</div>
+        <div class="diff-title">Suporte Contínuo</div>
+        <div class="diff-desc">Nosso relacionamento não termina na entrega. Oferecemos suporte pós-serviço para garantir o funcionamento perfeito.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BAND -->
+  <section id="cta-band">
+    <div class="reveal">
+      <h2 class="cta-title">Pronto para <span style="background:linear-gradient(90deg,var(--teal-bright),var(--green-neon));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Evoluir</span> sua Tecnologia?</h2>
+      <p class="cta-sub">Entre em contato agora e receba um orçamento personalizado sem compromisso. Atendimento imediato via WhatsApp.</p>
+      <div class="cta-actions">
+        <a href="https://wa.me/5581982797620?text=Olá! Quero solicitar um orçamento para os serviços da MPC Nexus Tech." target="_blank" class="btn-whatsapp">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          Falar no WhatsApp
+        </a>
+        <a href="#servicos" class="btn-ghost">Ver Todos os Serviços</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">MPC <span>NEXUS</span> TECH</div>
+    <p class="footer-tagline">Tecnologia que Conecta. Soluções que Transformam.</p>
+    </div>
+    <p class="footer-copy">© 2026 MPC Nexus Tech — Todos os direitos reservados.</p>
+  </footer>
+
+  <script>
+    // ——— CURSOR ———
+    const cursor = document.getElementById('cursor');
+    const ring   = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    function animCursor() {
+      if (cursor) { cursor.style.left = mx+'px'; cursor.style.top = my+'px'; }
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      if (ring) { ring.style.left = rx+'px'; ring.style.top = ry+'px'; }
+      requestAnimationFrame(animCursor);
+    }
+    animCursor();
+    document.querySelectorAll('a,button,.service-card,.diff-item').forEach(el => {
+      el.addEventListener('mouseenter', () => ring && ring.classList.add('hover'));
+      el.addEventListener('mouseleave', () => ring && ring.classList.remove('hover'));
+    });
+
+    // ——— PARTICLES ———
+    const pContainer = document.getElementById('particles');
+    const colors = ['#22a8c0','#3ef09a','#1e7a8c','#28c97a'];
+    for (let i = 0; i < 40; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 3 + 1;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      p.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random()*100}%;
+        background:${color};
+        --drift:${(Math.random()-0.5)*120}px;
+        animation-duration:${Math.random()*20+15}s;
+        animation-delay:-${Math.random()*20}s;
+        box-shadow: 0 0 ${size*3}px ${color};
+      `;
+      pContainer.appendChild(p);
+    }
+
+    // ——— NAVBAR SCROLL ———
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // ——— HAMBURGER ———
+    const ham = document.getElementById('hamburger');
+    const mob = document.getElementById('mobileMenu');
+    ham.addEventListener('click', () => {
+      ham.classList.toggle('active');
+      mob.classList.toggle('open');
+    });
+    function closeMobile() {
+      ham.classList.remove('active');
+      mob.classList.remove('open');
+    }
+
+    // ——— SCROLL REVEAL ———
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(r => observer.observe(r));
+
+    // ——— COUNTER ANIMATION ———
+    function animCount(el, target, duration) {
+      let start = 0; const step = target / (duration / 16);
+      const timer = setInterval(() => {
+        start = Math.min(start + step, target);
+        el.textContent = Math.floor(start) + (el.dataset.suffix || '');
+        if (start >= target) clearInterval(timer);
+      }, 16);
+    }
+    const statObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.querySelectorAll('[data-count]').forEach(el => {
+            animCount(el, parseInt(el.dataset.count), 1200);
+          });
+          statObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    const statsEl = document.getElementById('stats');
+    if (statsEl) statObserver.observe(statsEl);
+
+    // ——— CARD MAGNETIC GLOW ———
+    document.querySelectorAll('.service-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+        const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+        card.style.setProperty('--mx', x + '%');
+        card.style.setProperty('--my', y + '%');
+      });
+    });
+
+    // ——— SMOOTH ANCHOR ———
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+      });
+    });
+  </script>
+</body>
+</html>
